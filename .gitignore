@@ -216,3 +216,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node / Next.js (frontend)
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+npm-debug.log*
+.vercel
+
+# Environment files
+.env.local
+.env.*.local
+
+# Uploaded documents (local dev)
+backend/uploads/
