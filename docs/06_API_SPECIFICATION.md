@@ -163,6 +163,8 @@ The API is organized into the following domains.
 
 /faqs
 
+/hospitals
+
 /doctors
 
 /departments
@@ -426,7 +428,52 @@ DELETE /faqs/{id}
 
 ---
 
-# 11. Doctor APIs
+# 11. Hospital APIs
+
+The MVP supports a single hospital profile. Reads are public; writes are admin-only.
+
+## List Hospitals
+
+```
+GET /hospitals
+```
+
+## Create Hospital
+
+```
+POST /hospitals
+```
+
+Admin only. Returns `409` if a hospital profile already exists.
+
+## Hospital Details
+
+```
+GET /hospitals/{id}
+```
+
+## Update Hospital
+
+```
+PUT /hospitals/{id}
+```
+
+Admin only. Partial update; omitted fields are unchanged.
+
+## Hospital Settings
+
+```
+GET /hospitals/{id}/settings
+PUT /hospitals/{id}/settings
+```
+
+Settings include weekly working hours, emergency contact, and escalation email. `GET` requires authentication; `PUT` is admin-only. Working hours are validated (end after start, no overlapping slots).
+
+---
+
+# 12. Doctor APIs
+
+Reads are public; writes are admin-only.
 
 ## List Doctors
 
@@ -434,11 +481,11 @@ DELETE /faqs/{id}
 GET /doctors
 ```
 
-Optional Filters
+Optional Filters (query parameters)
 
-- department
-- specialization
-- availability
+- department_id
+- specialization (case-insensitive)
+- available
 
 ---
 
@@ -450,7 +497,39 @@ GET /doctors/{id}
 
 ---
 
-# 12. Department APIs
+## Create Doctor
+
+```
+POST /doctors
+```
+
+Admin only. Requires an existing `department_id`. Accepts an optional `opd_schedule` (validated weekly working hours).
+
+---
+
+## Update Doctor
+
+```
+PUT /doctors/{id}
+```
+
+Admin only. Partial update; moving a doctor requires a valid `department_id`.
+
+---
+
+## Delete Doctor
+
+```
+DELETE /doctors/{id}
+```
+
+Admin only.
+
+---
+
+# 13. Department APIs
+
+Reads are public; writes are admin-only.
 
 ## List Departments
 
@@ -468,7 +547,37 @@ GET /departments/{id}
 
 ---
 
-# 13. Admin APIs
+## Create Department
+
+```
+POST /departments
+```
+
+Admin only. Department names are unique per hospital (case-insensitive); duplicates return `409`.
+
+---
+
+## Update Department
+
+```
+PUT /departments/{id}
+```
+
+Admin only.
+
+---
+
+## Delete Department
+
+```
+DELETE /departments/{id}
+```
+
+Admin only. Returns `409` if the department still has doctors.
+
+---
+
+# 14. Admin APIs
 
 ## Dashboard Summary
 
@@ -493,7 +602,7 @@ GET /admin/audit
 
 ---
 
-# 14. Health APIs
+# 15. Health APIs
 
 ## Health Check
 
@@ -519,7 +628,7 @@ GET /live
 
 ---
 
-# 15. Standard Success Response
+# 16. Standard Success Response
 
 ```json
 {
@@ -530,7 +639,7 @@ GET /live
 
 ---
 
-# 16. Standard Error Response
+# 17. Standard Error Response
 
 ```json
 {
@@ -544,7 +653,7 @@ GET /live
 
 ---
 
-# 17. HTTP Status Codes
+# 18. HTTP Status Codes
 
 | Status | Meaning |
 |----------|---------|
@@ -564,7 +673,7 @@ GET /live
 
 ---
 
-# 18. Validation Rules
+# 19. Validation Rules
 
 Examples
 
@@ -588,7 +697,7 @@ Uploaded Files
 
 ---
 
-# 19. Pagination
+# 20. Pagination
 
 Collection endpoints support pagination.
 
@@ -611,7 +720,7 @@ Response
 
 ---
 
-# 20. Filtering
+# 21. Filtering
 
 Supported where appropriate.
 
@@ -623,7 +732,7 @@ GET /doctors?department=Cardiology
 
 ---
 
-# 21. Sorting
+# 22. Sorting
 
 Example
 
@@ -633,7 +742,7 @@ GET /documents?sort=created_at&order=desc
 
 ---
 
-# 22. Security
+# 23. Security
 
 API protections include:
 
@@ -652,7 +761,7 @@ See
 
 ---
 
-# 23. Idempotency
+# 24. Idempotency
 
 Safe methods
 
@@ -668,7 +777,7 @@ POST operations that create resources should support idempotency keys if future 
 
 ---
 
-# 24. API Versioning Strategy
+# 25. API Versioning Strategy
 
 Current
 
@@ -687,7 +796,7 @@ Breaking changes require a new API version.
 
 ---
 
-# 25. Future APIs
+# 26. Future APIs
 
 Phase 2
 
@@ -731,7 +840,7 @@ Phase 4
 
 ---
 
-# 26. Performance Targets
+# 27. Performance Targets
 
 | API | Target |
 |------|---------|
@@ -744,7 +853,7 @@ Phase 4
 
 ---
 
-# 27. API Governance
+# 28. API Governance
 
 Every API must:
 
@@ -759,7 +868,7 @@ Every API must:
 
 ---
 
-# 28. OpenAPI Specification
+# 29. OpenAPI Specification
 
 The backend should automatically generate an OpenAPI 3.1 specification.
 
@@ -773,7 +882,7 @@ This specification serves as the single source of truth for client generation an
 
 ---
 
-# 29. Architectural Decisions
+# 30. Architectural Decisions
 
 | Decision | Reason |
 |----------|--------|
@@ -786,7 +895,7 @@ This specification serves as the single source of truth for client generation an
 
 ---
 
-# 30. Summary
+# 31. Summary
 
 The API architecture is designed to provide a stable, secure, and scalable contract between all application components.
 

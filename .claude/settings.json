@@ -5,7 +5,12 @@
       "PowerShell(node --version)",
       "PowerShell(npm --version)",
       "PowerShell(Set-Location \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\"; $p = Start-Process -FilePath \".\\\\.venv\\\\Scripts\\\\uvicorn.exe\" -ArgumentList \"app.main:app\",\"--port\",\"8123\" -PassThru -WindowStyle Hidden; Start-Sleep -Seconds 4; try { $h = Invoke-RestMethod http://127.0.0.1:8123/health; $l = Invoke-RestMethod http://127.0.0.1:8123/live; $ping = Invoke-RestMethod http://127.0.0.1:8123/api/v1/ping; \"health: $\\($h | ConvertTo-Json -Compress\\)\"; \"live: $\\($l | ConvertTo-Json -Compress\\)\"; \"ping: $\\($ping | ConvertTo-Json -Compress\\)\"; try { Invoke-RestMethod http://127.0.0.1:8123/ready } catch { \"ready \\(expected 503 without Postgres\\): $\\($_.ErrorDetails.Message\\)\" } } finally { Stop-Process -Id $p.Id -Force })",
-      "PowerShell(& \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install -q -r \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\requirements-dev.txt\")"
+      "PowerShell(& \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install -q -r \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\requirements-dev.txt\")",
+      "Bash(./.venv/Scripts/python.exe -m pytest)",
+      "Bash(./.venv/Scripts/python.exe -m ruff check app tests alembic)",
+      "Bash(./.venv/Scripts/python.exe -m black --check app tests alembic)",
+      "Bash(./.venv/Scripts/python.exe -m black app tests alembic)",
+      "Bash(python -)"
     ]
   }
 }

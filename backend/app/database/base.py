@@ -2,8 +2,12 @@
 
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, MetaData, func
+from sqlalchemy import JSON, BigInteger, DateTime, MetaData, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+# JSON column type: JSONB on PostgreSQL, plain JSON elsewhere (e.g. SQLite in tests).
+JSONColumn = JSON().with_variant(JSONB(), "postgresql")
 
 # Deterministic constraint names so Alembic migrations stay stable across databases.
 NAMING_CONVENTION = {

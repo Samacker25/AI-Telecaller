@@ -81,23 +81,37 @@
 
 ---
 
-# Phase 2 — Hospital Management
+# Phase 2 — Hospital Management ✅ (completed 2026-07-19)
 
-### T020 — Hospital Model
+### T020 — Hospital Model ✅
+- [x] `hospitals` table (UUID id, name, address, phone, email, website, settings JSON, timestamps)
+- [x] Alembic migration `0002_create_hospital_tables`
 
-### T021 — Hospital CRUD
+### T021 — Hospital CRUD ✅
+- [x] `GET/POST /api/v1/hospitals`, `GET/PUT /api/v1/hospitals/{id}` (public reads, admin writes)
+- [x] Single-hospital MVP: second create returns 409
 
-### T022 — Department Model
+### T022 — Department Model ✅
+- [x] `departments` table (hospital FK, unique name per hospital)
 
-### T023 — Department CRUD
+### T023 — Department CRUD ✅
+- [x] `GET/POST /api/v1/departments`, `GET/PUT/DELETE /api/v1/departments/{id}`
+- [x] Case-insensitive duplicate-name protection; delete blocked while doctors exist
 
-### T024 — Doctor Model
+### T024 — Doctor Model ✅
+- [x] `doctors` table (hospital + department FKs, specialization, qualification, opd_schedule JSON, is_available)
 
-### T025 — Doctor CRUD
+### T025 — Doctor CRUD ✅
+- [x] `GET/POST /api/v1/doctors`, `GET/PUT/DELETE /api/v1/doctors/{id}`
+- [x] Public list filters: department_id, specialization (case-insensitive), available
 
-### T026 — Working Hours
+### T026 — Working Hours ✅
+- [x] `WeeklySchedule` schema (per-day time slots, end-after-start and overlap validation)
+- [x] Used for doctor OPD schedules and hospital working hours
 
-### T027 — Hospital Settings
+### T027 — Hospital Settings ✅
+- [x] `GET/PUT /api/v1/hospitals/{id}/settings` (working hours, emergency contact, escalation email)
+- [x] Stored as validated JSON on the hospital record
 
 ---
 
