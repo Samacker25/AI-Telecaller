@@ -42,6 +42,12 @@ class Settings(BaseSettings):
     pinecone_api_key: str = ""
     pinecone_index: str = ""
 
+    # Knowledge ingestion
+    embedding_model: str = "gemini-embedding-001"
+    embedding_dimension: int = 768
+    chunk_size: int = 1200  # target chunk length in characters
+    chunk_overlap: int = 200  # characters carried over between adjacent chunks
+
     # Uploads
     upload_directory: str = "uploads"
     max_upload_size: int = 10 * 1024 * 1024  # 10 MB

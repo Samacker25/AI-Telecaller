@@ -10,7 +10,13 @@
       "Bash(./.venv/Scripts/python.exe -m ruff check app tests alembic)",
       "Bash(./.venv/Scripts/python.exe -m black --check app tests alembic)",
       "Bash(./.venv/Scripts/python.exe -m black app tests alembic)",
-      "Bash(python -)"
+      "Bash(python -)",
+      "Bash(./.venv/Scripts/python.exe -m pip install -q -r requirements.txt)",
+      "Bash(./.venv/Scripts/black.exe -q app tests alembic/versions/0003_create_documents_table.py)",
+      "Bash(./.venv/Scripts/ruff.exe check *)",
+      "Bash(./.venv/Scripts/pytest.exe)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'phase 3 setup tasks completed \\(knowledge base: T030-T038\\) *)"
     ]
   }
 }

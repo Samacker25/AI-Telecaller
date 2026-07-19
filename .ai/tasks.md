@@ -115,25 +115,35 @@
 
 ---
 
-# Phase 3 — Knowledge Base
+# Phase 3 — Knowledge Base ✅ (completed 2026-07-19)
 
-### T030 — Document Upload
+### T030 — Document Upload ✅
+- [x] `POST /api/v1/documents` (multipart; PDF/DOCX/TXT; type, size, and empty-file validation)
+- [x] Files stored under `UPLOAD_DIRECTORY` with server-generated names (`{document_id}.{ext}`)
 
-### T031 — PDF Parser
+### T031 — PDF Parser ✅
+- [x] pypdf text extraction (`app/ai/parsers.py`)
 
-### T032 — DOCX Parser
+### T032 — DOCX Parser ✅
+- [x] python-docx extraction of paragraphs and tables
 
-### T033 — Text Cleaner
+### T033 — Text Cleaner ✅
+- [x] Unicode NFKC, line endings, control chars, whitespace (`app/ai/text_cleaner.py`)
 
-### T034 — Chunking
+### T034 — Chunking ✅
+- [x] Paragraph-aware chunking with word-boundary overlap (`app/ai/chunker.py`)
 
-### T035 — Embeddings
+### T035 — Embeddings ✅
+- [x] `EmbeddingClient` protocol + `GeminiEmbeddingClient` (`app/ai/embeddings.py`)
 
-### T036 — Pinecone
+### T036 — Pinecone ✅
+- [x] `VectorStore` protocol + `PineconeVectorStore` (namespace per hospital, prefix deletes)
 
-### T037 — Metadata Storage
+### T037 — Metadata Storage ✅
+- [x] `documents` table + migration `0003` (status lifecycle: uploaded → processing → indexed/failed)
 
-### T038 — Knowledge CRUD
+### T038 — Knowledge CRUD ✅
+- [x] List/get/delete/reindex endpoints; `KnowledgeService`; 21 API + ingestion unit tests
 
 ---
 

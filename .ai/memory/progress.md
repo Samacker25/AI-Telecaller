@@ -41,3 +41,27 @@
 
 ### Next
 - Phase 1 — Authentication (T010–T017 in tasks.md Phase 1 section).
+
+## 2026-07-19 — Phase 3 Complete (Knowledge Base, T030–T038)
+
+### Ingestion pipeline (`app/ai/`)
+- `parsers.py` — PDF (pypdf), DOCX (python-docx, paragraphs + tables), TXT (utf-8 with latin-1 fallback); raises `DocumentParseError` on unreadable/empty documents.
+- `text_cleaner.py` — NFKC normalization, line endings, control chars, whitespace; preserves paragraph breaks.
+- `chunker.py` — paragraph-aware chunks (`CHUNK_SIZE`=1200 chars) with word-boundary overlap (`CHUNK_OVERLAP`=200).
+- `embeddings.py` — `EmbeddingClient` protocol; `GeminiEmbeddingClient` (`gemini-embedding-001`, 768 dims, batches of 100).
+- `vector_store.py` — `VectorStore` protocol; `PineconeVectorStore`: IDs `{document_id}:{chunk_index}`, namespace per hospital, deletes via ID-prefix listing (serverless-safe).
+
+### Service / API
+- `documents` table + migration `0003` (metadata only; status uploaded → processing → indexed/failed, `chunk_count`, `error_message`, `uploaded_by`).
+- `KnowledgeService` — upload validation (type/size/empty), file storage under `UPLOAD_DIRECTORY` as `{document_id}.{ext}`, sync ingestion with status tracking, reindex, delete (vectors + file + record). Sync SDK calls wrapped in `run_in_threadpool`.
+- `POST/GET /api/v1/documents`, `GET/DELETE /documents/{id}`, `POST /documents/{id}/reindex`. Writes admin-only, reads authenticated. Upload responds `{document_id, status}` per API spec.
+
+### Notes / decisions
+- Ingestion runs synchronously in the upload request (spec budget <30 s); failures mark the document `failed` instead of failing the request, so uploads are never lost.
+- Providers injected behind protocols and built in `get_knowledge_service` (documents.py); tests override with in-memory fakes — no Gemini/Pinecone needed (`tests/test_knowledge.py`, `tests/test_ingestion.py`; 106 tests passing).
+- Missing AI credentials → documents marked `failed` with `AI_NOT_CONFIGURED`; app remains usable in dev.
+- New deps: pypdf, python-docx, python-multipart, google-genai, pinecone.
+- `docs/04_AI_RAG_ARCHITECTURE.md` written (ingestion half; retrieval/generation reserved for Phase 4).
+
+### Next
+- Phase 4 — RAG (T040–T047): retrieval engine, prompt builder, Gemini generation, confidence + escalation.
