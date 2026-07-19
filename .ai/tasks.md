@@ -180,17 +180,31 @@
 
 ---
 
-# Phase 5 — Chat API
+# Phase 5 — Chat API ✅ (completed 2026-07-19)
 
-### T050 — Chat Endpoint
+### T050 — Chat Endpoint ✅
+- [x] `POST /api/v1/chat` (public): validates message (1–2000 chars, non-blank), answers via `RagService`
+- [x] `ChatService` (`app/services/chat_service.py`): resolves hospital, injects emergency contact from hospital settings
+- [x] 503 with safe codes when hospital profile or AI providers are not configured
 
-### T051 — Conversation Storage
+### T051 — Conversation Storage ✅
+- [x] `conversations` + `messages` tables, migration `0004` (session_id unique, hospital FK, escalated flag)
+- [x] Messages store sender, text, `position` (deterministic ordering), `response_time_ms`, `confidence_score`, `escalation_reason`
+- [x] `ConversationRepository`: find by session, list with filters, atomic message appends
 
-### T052 — Session Management
+### T052 — Session Management ✅
+- [x] Session ids are UUIDs mapped one-to-one to conversations; omitted session_id starts a new session
+- [x] Prompt window rebuilt from the last `CONVERSATION_MAX_TURNS` stored messages
+- [x] `POST /api/v1/chat/reset` issues a fresh session id; old history preserved for staff review
 
-### T053 — Streaming Response
+### T053 — Streaming Response ✅
+- [x] `POST /api/v1/chat/stream`: Server-Sent Events — `meta` → `delta` chunks → `done` (confidence, escalation, citations)
+- [x] Full RAG pipeline (grounding, escalation, persistence) runs before streaming; answer streamed in word chunks
 
-### T054 — Chat History
+### T054 — Chat History ✅
+- [x] `GET /api/v1/conversations` (auth): newest first, `escalated`/`limit`/`offset` filters
+- [x] `GET /api/v1/conversations/{id}` (auth): conversation + complete ordered message history
+- [x] docs/06_API_SPECIFICATION.md chat section updated; 14 chat API tests (154 total passing)
 
 ---
 

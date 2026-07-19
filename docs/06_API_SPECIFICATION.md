@@ -286,13 +286,13 @@ POST /chat
 
 Purpose
 
-Send a patient message to the AI assistant.
+Send a patient message to the AI assistant. Public (no authentication).
 
 Request
 
 ```json
 {
-  "session_id": "uuid",
+  "session_id": "uuid (optional — omit to start a new session)",
   "message": "What are the OPD timings?"
 }
 ```
@@ -301,11 +301,36 @@ Response
 
 ```json
 {
+  "session_id": "uuid",
+  "conversation_id": "uuid",
   "answer": "...",
   "confidence": 0.96,
-  "escalation": false
+  "escalated": false,
+  "escalation_reason": null,
+  "citations": [
+    {"document_id": "...", "file_name": "faq.pdf", "chunk_index": 0, "score": 0.96}
+  ]
 }
 ```
+
+Errors
+
+- 422 — empty or oversized message
+- 503 — hospital profile not configured, or AI providers not configured
+
+---
+
+## Send Message (Streaming)
+
+```
+POST /chat/stream
+```
+
+Same request body as `POST /chat`. Responds with Server-Sent Events:
+
+- `meta` — `{"session_id", "conversation_id"}`
+- `delta` — `{"text"}` answer chunks, in order
+- `done` — `{"confidence", "escalated", "escalation_reason", "citations"}`
 
 ---
 
@@ -315,7 +340,26 @@ Response
 POST /chat/reset
 ```
 
-Clears current conversation context.
+Clears the conversation context by issuing a fresh `session_id`.
+The previous conversation history remains stored for staff review.
+
+Response
+
+```json
+{
+  "session_id": "uuid"
+}
+```
+
+---
+
+## List Conversations
+
+```
+GET /conversations?escalated=&limit=&offset=
+```
+
+Authentication required. Returns conversations, newest first.
 
 ---
 
@@ -325,7 +369,8 @@ Clears current conversation context.
 GET /conversations/{conversation_id}
 ```
 
-Returns complete message history.
+Authentication required. Returns the conversation and its complete
+message history in order.
 
 ---
 

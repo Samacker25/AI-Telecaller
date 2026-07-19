@@ -23,7 +23,10 @@
       "Bash(./.venv/Scripts/python.exe -m black --check app tests scripts)",
       "Bash(./.venv/Scripts/python.exe -m black app tests scripts)",
       "Bash(./.venv/Scripts/python.exe -m pytest tests/test_rag.py tests/test_rag_evaluation.py)",
-      "Bash(./.venv/Scripts/python.exe -c \"import scripts.rag_eval; print\\('eval script imports OK'\\)\")"
+      "Bash(./.venv/Scripts/python.exe -c \"import scripts.rag_eval; print\\('eval script imports OK'\\)\")",
+      "PowerShell(& \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\.venv\\\\Scripts\\\\python.exe\" -m pip list 2>$null | Select-Object -First 30; python --version; \\(Get-Command python\\).Source)",
+      "PowerShell(& \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install -q -r \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\requirements.txt\" -r \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\requirements-dev.txt\" 2>&1)",
+      "PowerShell(& \"f:\\\\projects\\\\My projects\\\\AI-Telecaller\\\\backend\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest tests -q 2>&1)"
     ]
   }
 }
