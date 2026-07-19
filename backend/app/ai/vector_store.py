@@ -6,6 +6,7 @@ and each hospital gets its own namespace (future multi-tenancy).
 """
 
 import uuid
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 from app.ai.chunker import Chunk
@@ -20,8 +21,19 @@ class VectorStoreError(Exception):
     """Raised when the vector database operation fails."""
 
 
+@dataclass(frozen=True)
+class RetrievedChunk:
+    """A knowledge chunk returned by similarity search."""
+
+    document_id: str
+    chunk_index: int
+    file_name: str
+    text: str
+    score: float
+
+
 class VectorStore(Protocol):
-    """Stores and removes embedded document chunks."""
+    """Stores, searches, and removes embedded document chunks."""
 
     def upsert_chunks(
         self,
@@ -32,6 +44,10 @@ class VectorStore(Protocol):
         chunks: list[Chunk],
         vectors: list[list[float]],
     ) -> None: ...
+
+    def query(
+        self, *, hospital_id: uuid.UUID, vector: list[float], top_k: int
+    ) -> list[RetrievedChunk]: ...
 
     def delete_document(self, *, hospital_id: uuid.UUID, document_id: uuid.UUID) -> None: ...
 
@@ -77,6 +93,37 @@ class PineconeVectorStore:
                 extra={"extra_fields": {"document_id": str(document_id)}},
             )
             raise VectorStoreError("Vector store upsert failed.") from exc
+
+    def query(
+        self, *, hospital_id: uuid.UUID, vector: list[float], top_k: int
+    ) -> list[RetrievedChunk]:
+        try:
+            response = self._index.query(
+                vector=vector,
+                top_k=top_k,
+                namespace=str(hospital_id),
+                include_metadata=True,
+            )
+        except Exception as exc:
+            logger.warning(
+                "vector query failed",
+                extra={"extra_fields": {"hospital_id": str(hospital_id)}},
+            )
+            raise VectorStoreError("Vector store query failed.") from exc
+
+        results: list[RetrievedChunk] = []
+        for match in response.matches:
+            metadata = match.metadata or {}
+            results.append(
+                RetrievedChunk(
+                    document_id=str(metadata.get("document_id", "")),
+                    chunk_index=int(metadata.get("chunk_index", 0)),
+                    file_name=str(metadata.get("file_name", "")),
+                    text=str(metadata.get("text", "")),
+                    score=float(match.score or 0.0),
+                )
+            )
+        return results
 
     def delete_document(self, *, hospital_id: uuid.UUID, document_id: uuid.UUID) -> None:
         namespace = str(hospital_id)

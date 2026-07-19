@@ -65,3 +65,29 @@
 
 ### Next
 - Phase 4 — RAG (T040–T047): retrieval engine, prompt builder, Gemini generation, confidence + escalation.
+
+## 2026-07-19 — Phase 4 Complete (RAG, T040–T047)
+
+### Answering pipeline (`app/ai/` + `app/services/rag_service.py`)
+- `vector_store.py` — added `VectorStore.query` + `RetrievedChunk` (Pinecone similarity search, per-hospital namespace, metadata returned).
+- `retriever.py` — `Retriever`: embed query → top-k search → drop matches below `RETRIEVAL_MIN_SCORE` (0.45), sorted best-first; logs latency/scores/doc IDs.
+- `llm.py` — `LLMClient` protocol; `GeminiLLMClient` (`LLM_MODEL`=gemini-2.5-flash, temperature 0.2, 1024-token cap); `LLMError` on failure/empty output.
+- `memory.py` — `ConversationMemory`: bounded turn window (`CONVERSATION_MAX_TURNS`=10), `clear()`; persistence deferred to Phase 5.
+- `prompt_builder.py` — fixed order system → numbered context `[n]` → history → question; grounding + no-medical-advice + injection-resistance rules.
+- `safety.py` — deterministic regex detection of emergencies and medical-advice requests (false positives route to humans — the safe direction).
+- `rag_service.py` — `RagService.answer`: safety checks → retrieve → confidence (best similarity) → generate or escalate. Returns `RagAnswer {answer, confidence, escalated, escalation_reason, citations}` (`app/schemas/rag.py`, Pydantic for Phase 5 reuse). Escalation reasons: emergency, medical_advice, no_knowledge, low_confidence, generation_failed. Vector-store outage raises 503 `VECTOR_STORE_UNAVAILABLE`.
+
+### Evaluation (T047)
+- `app/ai/evaluation.py` — `load_golden_dataset` + `evaluate_rag` (per-case pass, pass rate, escalation accuracy).
+- `backend/evals/golden_dataset.json` — 7 seed cases (answerable + must-escalate).
+- `python -m scripts.rag_eval` — runs the dataset against live providers, exits non-zero on failure (release gate).
+- `docs/11_AI_EVALUATION.md` written; `docs/04_AI_RAG_ARCHITECTURE.md` updated to v0.2 (answering pipeline documented).
+
+### Notes / decisions
+- Confidence = best retrieval similarity score — simple, deterministic, explainable; thresholds configurable (`RAG_CONFIDENCE_THRESHOLD`=0.55).
+- Escalations still record both turns in memory so follow-ups stay coherent; escalated answers never include invented content or citations.
+- `RagService` takes no DB session — Phase 5's chat service owns persistence and can pass `emergency_contact` from hospital settings.
+- Tests: `tests/test_rag.py` + `tests/test_rag_evaluation.py` (35 new; 141 total passing) with fake embedder/vector store/LLM — no credentials needed.
+
+### Next
+- Phase 5 — Chat API (T050–T054): chat endpoint, conversation storage, sessions, streaming, history.

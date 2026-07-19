@@ -147,23 +147,36 @@
 
 ---
 
-# Phase 4 — RAG
+# Phase 4 — RAG ✅ (completed 2026-07-19)
 
-### T040 — Retrieval Engine
+### T040 — Retrieval Engine ✅
+- [x] `VectorStore.query` + `RetrievedChunk` (Pinecone similarity search per hospital namespace)
+- [x] `Retriever` (`app/ai/retriever.py`): embed query → top-k search → drop scores below `RETRIEVAL_MIN_SCORE`
 
-### T041 — Prompt Builder
+### T041 — Prompt Builder ✅
+- [x] `app/ai/prompt_builder.py`: fixed order system → numbered context `[n]` → history → question
+- [x] Grounding, no-medical-advice, and prompt-injection-resistance rules in the system instruction
 
-### T042 — Gemini Integration
+### T042 — Gemini Integration ✅
+- [x] `LLMClient` protocol + `GeminiLLMClient` (`LLM_MODEL`, temperature, output cap; `LLMError` on failure)
 
-### T043 — Conversation Memory
+### T043 — Conversation Memory ✅
+- [x] `ConversationMemory` (`app/ai/memory.py`): bounded window (`CONVERSATION_MAX_TURNS`), oldest dropped first, `clear()`
+- [x] Persistence deferred to Phase 5 conversation storage by design
 
-### T044 — Citation Support
+### T044 — Citation Support ✅
+- [x] Answers carry `Citation` list (document_id, file_name, chunk_index, score); prompt instructs `[n]` markers
 
-### T045 — Confidence Score
+### T045 — Confidence Score ✅
+- [x] Confidence = best retrieval similarity; `RAG_CONFIDENCE_THRESHOLD` gates generation
 
-### T046 — Human Escalation
+### T046 — Human Escalation ✅
+- [x] `RagService` escalates with safe fallback answers: emergency, medical_advice, no_knowledge, low_confidence, generation_failed
+- [x] Deterministic emergency/medical-advice detection (`app/ai/safety.py`); emergency contact injected when configured
 
-### T047 — RAG Evaluation
+### T047 — RAG Evaluation ✅
+- [x] Golden dataset (`backend/evals/golden_dataset.json`) + framework (`app/ai/evaluation.py`)
+- [x] `python -m scripts.rag_eval` runner; docs/11_AI_EVALUATION.md written; 35 RAG/eval tests passing
 
 ---
 

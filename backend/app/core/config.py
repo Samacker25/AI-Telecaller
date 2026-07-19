@@ -48,6 +48,15 @@ class Settings(BaseSettings):
     chunk_size: int = 1200  # target chunk length in characters
     chunk_overlap: int = 200  # characters carried over between adjacent chunks
 
+    # RAG (retrieval + generation)
+    llm_model: str = "gemini-2.5-flash"
+    llm_temperature: float = 0.2
+    llm_max_output_tokens: int = 1024
+    retrieval_top_k: int = 5
+    retrieval_min_score: float = 0.45  # drop retrieved chunks below this similarity
+    rag_confidence_threshold: float = 0.55  # escalate answers below this confidence
+    conversation_max_turns: int = 10  # history turns kept in the prompt window
+
     # Uploads
     upload_directory: str = "uploads"
     max_upload_size: int = 10 * 1024 * 1024  # 10 MB
